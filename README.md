@@ -4,8 +4,8 @@ ef
 Make `cd` a little more <strong>ef</strong>-ficient.
 
 Works just like `cd`, but you can specify a directory name or path (not necessarily relative to your working directory),
-and `ef` will search your home directory tree for directories matching that path. It intelligently sorts matches and
-`cd`s you into the best match.
+and `ef` will search your home directory tree for directories that match. `ef` intelligently sorts matches and `cd`'s you
+into the best match.
 
 Usage
 ----
@@ -29,7 +29,7 @@ Install
 1. `go get github.com/beyang/ef/...`
 1. Add this to your `.bashrc`:
 ```
-source path/to/this/repository/cd.sh
+source path/to/this/repository/ef.sh
 ```
 1. If you really like `ef`, you can also add to `.bashrc`:
 ```
