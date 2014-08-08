@@ -11,7 +11,7 @@ Install
 ```
 source path/to/cd.sh
 ```
-1. If you really like it, you can also add to `.bashrc`
+1. If you really like it, you can also add to `.bashrc`:
 ```
 alias cd=ef
 ```
