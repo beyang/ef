@@ -1,8 +1,8 @@
 ef() {
-    DIR=$(findpath --find-args='-type d' "$@" 2> /dev/null)
+    DIR=$(findpath --find-args='-type d' "$@" 2> /dev/null);
     if [ "$?" -eq "0" ]; then
-        cd $DIR
+        cd $DIR;
     else
-        cd "$@"
+        cd "$@";
     fi
 }
