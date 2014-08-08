@@ -16,9 +16,10 @@ import (
 )
 
 type Options struct {
-	TopDir  string `long:"top" description:"top directory to search for directory names" default:"/home/beyang"`
-	Verbose bool   `long:"verbose" short:"v"`
-	Args    struct {
+	TopDir   string `long:"top" description:"top directory to search for directory names" default:"/home/beyang"`
+	Verbose  bool   `long:"verbose" short:"v"`
+	FindArgs string `long:"find-args" description:"flags to pass to find"`
+	Args     struct {
 		Path string
 	} `required:"yes" positional-args:"yes"`
 }
@@ -26,12 +27,19 @@ type Options struct {
 var opt Options
 
 func info(s string, args ...interface{}) {
+	if opt.Verbose {
+		fmt.Fprintf(os.Stderr, s, args...)
+	}
+}
+
+func printerr(s string, args ...interface{}) {
 	fmt.Fprintf(os.Stderr, s, args...)
 }
 
 func main() {
 	_, err := flags.Parse(&opt)
 	if err != nil {
+		printerr("%s\n", err)
 		os.Exit(1)
 	}
 
@@ -52,8 +60,11 @@ func main() {
 
 func find() (string, error) {
 	// Get parent directories via find
-	pathComponents := strings.Split(opt.Args.Path, string(filepath.Separator))
-	out, err := exec.Command("find", opt.TopDir, "-name", pathComponents[0]).CombinedOutput()
+	pathComponents := tocomponents(opt.Args.Path)
+	args := []string{opt.TopDir}
+	args = append(args, strings.Fields(opt.FindArgs)...)
+	args = append(args, "-name", pathComponents[0])
+	out, err := exec.Command("find", args...).CombinedOutput()
 	if err != nil {
 		info(string(out))
 		return "", err
@@ -61,7 +72,7 @@ func find() (string, error) {
 	parents := strings.Split(string(out), "\n")
 
 	// Sort parents
-	sort.Strings(parents)
+	sort.Sort(PathSorter(parents))
 
 	// Return first parent with matching child
 	for _, parent := range parents {
@@ -76,4 +87,53 @@ func find() (string, error) {
 func exists(path string) bool {
 	_, err := os.Lstat(path)
 	return err == nil
+}
+
+func tocomponents(pathname string) []string {
+	return strings.Split(pathname, string(filepath.Separator))
+}
+
+type PathSorter []string
+
+func (s PathSorter) Len() int {
+	return len(s)
+}
+func (s PathSorter) Swap(i, j int) {
+	s[i], s[j] = s[j], s[i]
+}
+func (s PathSorter) Less(i, j int) bool {
+	cmpi, cmpj := tocomponents(s[i]), tocomponents(s[j])
+
+	hashiddeni := stringSliceContains(cmpi, func(s string) bool { return strings.HasPrefix(s, ".") })
+	hashiddenj := stringSliceContains(cmpj, func(s string) bool { return strings.HasPrefix(s, ".") })
+	if hashiddeni && !hashiddenj {
+		return false
+	} else if hashiddenj && !hashiddeni {
+		return true
+	}
+
+	hasundi := stringSliceContains(cmpi, func(s string) bool { return strings.HasPrefix(s, "_") })
+	hasundj := stringSliceContains(cmpj, func(s string) bool { return strings.HasPrefix(s, "_") })
+	if hasundi && !hasundj {
+		return false
+	} else if hasundj && !hasundi {
+		return true
+	}
+
+	if len(cmpi) < len(cmpj) {
+		return true
+	} else if len(cmpj) > len(cmpi) {
+		return false
+	} else {
+		return len(cmpi) <= len(cmpj)
+	}
+}
+
+func stringSliceContains(slice []string, fn func(string) bool) bool {
+	for _, e := range slice {
+		if fn(e) {
+			return true
+		}
+	}
+	return false
 }
