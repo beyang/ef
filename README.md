@@ -1,22 +1,24 @@
 ef
 ====
 
-Make `cd` a little more *ef*ficient.
+Make `cd` a little more <strong>ef</strong>-ficient.
 
-Works just like `cd`, but you can specify a partial path (not necessarily relative to your working directory), and `ef`
-will search your home directory tree for directories matching that path. It intelligently sorts matches and `cd`s you
-into the best match.
+Works just like `cd`, but you can specify a directory name or path (not necessarily relative to your working directory),
+and `ef` will search your home directory tree for directories matching that path. It intelligently sorts matches and
+`cd`s you into the best match.
 
 Usage
 ----
 ```bash
 ~$ ls
 bin src pkg tmp
-~$ ef src              # works just like cd!
+~$ ef src                # works just like cd!
 ~/src$ ef
-~$ ef flask            # jump to directory by name
-~/src/github.com/mitsuhiko/flask$ ef sourcegraph
-~/src/sourcegraph.com/sourcegraph$ ef beyang/ef       # specify not just a name, but a partial path
+~$ ef flask              # jump to directory by name
+~/src/github.com/mitsuhiko/flask$ 
+~/src/github.com/mitsuhiko/flask$ ef mux
+~/src/github.com/gorilla/mux$ 
+~/src/github.com/gorilla/mux$ ef beyang/ef  # type not just a name, but a partial path
 ~/src/github.com/beyang/ef$ ef
 ~$ 
 ```
@@ -27,9 +29,9 @@ Install
 1. `go get github.com/beyang/ef/...`
 1. Add this to your `.bashrc`:
 ```
-source path/to/cd.sh
+source path/to/this/repository/cd.sh
 ```
-1. If you really like it, you can also add to `.bashrc`:
+1. If you really like `ef`, you can also add to `.bashrc`:
 ```
 alias cd=ef
 ```
