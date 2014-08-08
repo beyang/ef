@@ -9,7 +9,7 @@ into the best match.
 
 Usage
 ----
-```
+```bash
 ~$ ls
 bin src pkg tmp
 ~$ ef src              # works just like cd!
