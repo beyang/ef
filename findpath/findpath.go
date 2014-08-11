@@ -16,7 +16,7 @@ import (
 )
 
 type Options struct {
-	TopDir   string `long:"top" description:"top directory to search for directory names" default:"/home/beyang"`
+	TopDir   string `long:"top" description:"top directory to search for directory names"`
 	Verbose  bool   `long:"verbose" short:"v"`
 	FindArgs string `long:"find-args" description:"flags to pass to find"`
 	Args     struct {
@@ -42,6 +42,13 @@ func main() {
 		printerr("%s\n", err)
 		os.Exit(1)
 	}
+	if opt.TopDir == "" {
+		opt.TopDir = os.Getenv("HOME")
+		if opt.TopDir == "" {
+			printerr("must set --top flag or define $HOME\n")
+			os.Exit(1)
+		}
+	}
 
 	// If path exists at $PWD, just return it
 	if exists(opt.Args.Path) {
@@ -64,10 +71,10 @@ func find() (string, error) {
 	args := []string{opt.TopDir}
 	args = append(args, strings.Fields(opt.FindArgs)...)
 	args = append(args, "-name", pathComponents[0])
-	out, err := exec.Command("find", args...).CombinedOutput()
-	if err != nil {
+	out, err := exec.Command("find", args...).Output()
+	if err != nil && len(out) == 0 {
 		info(string(out))
-		return "", err
+		return "", fmt.Errorf("Error running find: %s", err)
 	}
 	parents := strings.Split(string(out), "\n")
 
