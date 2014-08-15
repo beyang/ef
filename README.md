@@ -31,3 +31,8 @@ Install
 ```
 source path/to/this/repository/ef.sh
 ```
+1. If you really like `ef`, you can also add to `.bashrc`:
+```
+alias cd=ef
+```
+(note: this does not play nicely if you use `rvm`, which also overwrites `cd`)
