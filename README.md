@@ -31,7 +31,3 @@ Install
 ```
 source path/to/this/repository/ef.sh
 ```
-1. If you really like `ef`, you can also add to `.bashrc`:
-```
-alias cd=ef
-```
